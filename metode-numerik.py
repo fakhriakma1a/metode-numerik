@@ -1,9 +1,5 @@
 import math
 
-# Sistem persamaan:
-# f1(x,y) = x^2 + xy - 10 = 0
-# f2(x,y) = y + 3xy^2 - 57 = 0
-
 # Parameter
 x0, y0 = 1.5, 3.5
 epsilon = 0.000001
