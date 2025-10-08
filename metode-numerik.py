@@ -1,12 +1,16 @@
 import math
 
+# Sistem persamaan:
+# f1(x,y) = x^2 + xy - 10 = 0
+# f2(x,y) = y + 3xy^2 - 57 = 0
+
 # Parameter
 x0, y0 = 1.5, 3.5
 epsilon = 0.000001
 max_iter = 1000
 
 print("="*80)
-print("PENYELESAIAN SISTEM PERSAMAAN NON LINEAR")
+print("PENYELESAIAN SISTEM PERSAMAAN NONLINEAR")
 print("f1(x,y) = x^2 + xy - 10 = 0")
 print("f2(x,y) = y + 3xy^2 - 57 = 0")
 print(f"Tebakan awal: x0 = {x0}, y0 = {y0}")
@@ -14,30 +18,25 @@ print(f"Epsilon: {epsilon}")
 print(f"NIMx = 72 mod 4 = 0")
 print("="*80)
 
+# ============================================================================
 # METODE 1: ITERASI TITIK TETAP - JACOBI dengan g1A dan g2A
+# ============================================================================
 print("\n" + "="*80)
 print("METODE 1: ITERASI TITIK TETAP - JACOBI (g1A dan g2A)")
 print("="*80)
 print("Fungsi iterasi:")
-print("g1A: x = sqrt(10 - xy)")
-print("g2A: y = sqrt((57 - y) / (3x))")
+print("g1A: x = (10 - x_r^2) / y_r")
+print("g2A: y = 57 - 3*x_r*y_r^2")
 print("-"*80)
 
 def g1A_jacobi(x, y):
-    val = 10 - x*y
-    if val <= 0:
-        print(f"Warning: 10 - xy = {val} <= 0 pada x={x:.6f}, y={y:.6f}")
+    if abs(y) < 1e-10:
+        print(f"Warning: y = {y} terlalu kecil (pembagi nol)")
         return None
-    return math.sqrt(val)
+    return (10 - x**2) / y
 
 def g2A_jacobi(x, y):
-    if abs(x) < 1e-10:
-        return None
-    val = (57 - y) / (3*x)
-    if val <= 0:
-        print(f"Warning: (57-y)/(3x) = {val} <= 0 pada x={x:.6f}, y={y:.6f}")
-        return None
-    return math.sqrt(val)
+    return 57 - 3*x*y**2
 
 x, y = x0, y0
 print(f"{'Iter':<6} {'x':<15} {'y':<15} {'deltaX':<15} {'deltaY':<15}")
@@ -47,11 +46,13 @@ print(f"{0:<6} {x:<15.6f} {y:<15.6f} {0.0:<15.6f} {0.0:<15.6f}")
 converged = False
 for i in range(1, max_iter + 1):
     x_old, y_old = x, y
+    
+    # Hitung x dan y menggunakan nilai lama (Jacobi)
     x_new = g1A_jacobi(x_old, y_old)
     y_new = g2A_jacobi(x_old, y_old)
     
     if x_new is None or y_new is None:
-        print(f"\nDivergen pada iterasi ke-{i} (nilai di dalam akar negatif)")
+        print(f"\nDivergen pada iterasi ke-{i}")
         break
     
     deltaX = abs(x_new - x_old)
@@ -59,7 +60,7 @@ for i in range(1, max_iter + 1):
     
     x, y = x_new, y_new
     
-    if i <= 15 or (deltaX < epsilon and deltaY < epsilon):
+    if i <= 20 or (deltaX < epsilon and deltaY < epsilon):
         print(f"{i:<6} {x:<15.6f} {y:<15.6f} {deltaX:<15.6f} {deltaY:<15.6f}")
     
     if deltaX < epsilon and deltaY < epsilon:
@@ -69,17 +70,24 @@ for i in range(1, max_iter + 1):
         print(f"           f2({x:.6f}, {y:.6f}) = {y + 3*x*y**2 - 57:.9f}")
         converged = True
         break
+    
+    # Cek apakah nilai menjadi sangat besar (divergen)
+    if abs(x) > 1e10 or abs(y) > 1e10:
+        print(f"\nDivergen pada iterasi ke-{i} (nilai terlalu besar)")
+        break
 
 if not converged and x_new is not None:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
+# ============================================================================
 # METODE 2: ITERASI TITIK TETAP - SEIDEL dengan g1A dan g2A
+# ============================================================================
 print("\n" + "="*80)
 print("METODE 2: ITERASI TITIK TETAP - SEIDEL (g1A dan g2A)")
 print("="*80)
 print("Fungsi iterasi:")
-print("g1A: x = sqrt(10 - xy)")
-print("g2A: y = sqrt((57 - y) / (3x)) [menggunakan x_baru]")
+print("g1A: x = (10 - x_r^2) / y_r")
+print("g2A: y = 57 - 3*x_{r+1}*y_r^2  [menggunakan x_baru]")
 print("-"*80)
 
 x, y = x0, y0
@@ -92,26 +100,18 @@ for i in range(1, max_iter + 1):
     x_old, y_old = x, y
     
     # Hitung x baru
-    val_x = 10 - x_old*y_old
-    if val_x <= 0:
-        print(f"\nDivergen pada iterasi ke-{i} (10 - xy = {val_x} <= 0)")
+    if abs(y_old) < 1e-10:
+        print(f"\nDivergen pada iterasi ke-{i} (y terlalu kecil)")
         break
-    x = math.sqrt(val_x)
+    x = (10 - x_old**2) / y_old
     
-    # Gunakan x baru untuk hitung y
-    if abs(x) < 1e-10:
-        print(f"\nDivergen pada iterasi ke-{i} (x terlalu kecil)")
-        break
-    val_y = (57 - y_old) / (3*x)
-    if val_y <= 0:
-        print(f"\nDivergen pada iterasi ke-{i} ((57-y)/(3x) = {val_y} <= 0)")
-        break
-    y = math.sqrt(val_y)
+    # Langsung gunakan x baru untuk hitung y (Seidel)
+    y = 57 - 3*x*y_old**2
     
     deltaX = abs(x - x_old)
     deltaY = abs(y - y_old)
     
-    if i <= 15 or (deltaX < epsilon and deltaY < epsilon):
+    if i <= 20 or (deltaX < epsilon and deltaY < epsilon):
         print(f"{i:<6} {x:<15.6f} {y:<15.6f} {deltaX:<15.6f} {deltaY:<15.6f}")
     
     if deltaX < epsilon and deltaY < epsilon:
@@ -121,11 +121,18 @@ for i in range(1, max_iter + 1):
         print(f"           f2({x:.6f}, {y:.6f}) = {y + 3*x*y**2 - 57:.9f}")
         converged = True
         break
+    
+    # Cek apakah nilai menjadi sangat besar (divergen)
+    if abs(x) > 1e10 or abs(y) > 1e10:
+        print(f"\nDivergen pada iterasi ke-{i} (nilai terlalu besar)")
+        break
 
 if not converged:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
+# ============================================================================
 # METODE 3: NEWTON-RAPHSON
+# ============================================================================
 print("\n" + "="*80)
 print("METODE 3: NEWTON-RAPHSON")
 print("="*80)
@@ -191,7 +198,9 @@ for i in range(1, max_iter + 1):
 if not converged:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
+# ============================================================================
 # METODE 4: SECANT
+# ============================================================================
 print("\n" + "="*80)
 print("METODE 4: METODE SECANT")
 print("="*80)
@@ -247,6 +256,11 @@ for i in range(2, max_iter + 1):
         converged = True
         break
     
+    # Cek divergensi
+    if abs(x_new) > 1e10 or abs(y_new) > 1e10:
+        print(f"\nDivergen pada iterasi ke-{i} (nilai terlalu besar)")
+        break
+    
     x_prev, y_prev = x_curr, y_curr
     x_curr, y_curr = x_new, y_new
 
@@ -257,20 +271,22 @@ print("\n" + "="*80)
 print("ANALISIS KONVERGENSI")
 print("="*80)
 print("\n1. METODE JACOBI vs SEIDEL:")
-print("   - Seidel lebih cepat konvergen karena menggunakan nilai x_baru")
-print("     langsung untuk menghitung y")
-print("   - Keduanya bergantung pada pemilihan fungsi iterasi yang tepat")
+print("   Fungsi iterasi yang digunakan:")
+print("   g1A: x = (10 - x^2) / y")
+print("   g2A: y = 57 - 3xy^2")
+print("   - Seidel lebih cepat karena menggunakan x_baru langsung")
+print("   - Konvergensi bergantung pada tebakan awal dan fungsi iterasi")
 print("\n2. METODE NEWTON-RAPHSON:")
-print("   - Konvergensi kuadratik (paling cepat)")
-print("   - Memerlukan perhitungan determinan Jacobi dan turunan parsial")
-print("   - Lebih stabil untuk berbagai tebakan awal")
+print("   - Konvergensi kuadratik (sangat cepat)")
+print("   - Menggunakan determinan Jacobi:")
+print("     det = (∂f1/∂x)(∂f2/∂y) - (∂f1/∂y)(∂f2/∂x)")
+print("   - Lebih stabil dan robust")
 print("\n3. METODE SECANT:")
-print("   - Aproksimasi Newton-Raphson tanpa turunan eksplisit")
-print("   - Konvergensi superlinear (antara linear dan kuadratik)")
-print("   - Memerlukan 2 tebakan awal untuk setiap variabel")
-print("\n4. PEMILIHAN FUNGSI ITERASI:")
-print("   - Fungsi g1A dan g2A: x = sqrt(10-xy), y = sqrt((57-y)/(3x))")
-print("   - Konvergen untuk tebakan awal yang dekat dengan solusi")
-print("   - Syarat konvergen: |∂g1/∂x| + |∂g1/∂y| < 1 dan")
-print("                       |∂g2/∂x| + |∂g2/∂y| < 1")
+print("   - Aproksimasi numerik tanpa turunan eksplisit")
+print("   - Konvergensi superlinear")
+print("   - Memerlukan 2 tebakan awal")
+print("\n4. SYARAT KONVERGEN METODE ITERASI TITIK-TETAP:")
+print("   |∂g1/∂x| + |∂g1/∂y| < 1")
+print("   |∂g2/∂x| + |∂g2/∂y| < 1")
+print("   di sekitar titik tetap (solusi)")
 print("="*80)
