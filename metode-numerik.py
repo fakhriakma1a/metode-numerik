@@ -1,9 +1,5 @@
 import math
 
-# Sistem persamaan:
-# f1(x,y) = x^2 + xy - 10 = 0
-# f2(x,y) = y + 3xy^2 - 57 = 0
-
 # Parameter
 x0, y0 = 1.5, 3.5
 epsilon = 0.000001
@@ -18,9 +14,7 @@ print(f"Epsilon: {epsilon}")
 print(f"NIMx = 72 mod 4 = 0")
 print("="*80)
 
-# ============================================================================
 # METODE 1: ITERASI TITIK TETAP - JACOBI dengan g1A dan g2A
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 1: ITERASI TITIK TETAP - JACOBI (g1A dan g2A)")
 print("="*80)
@@ -79,9 +73,7 @@ for i in range(1, max_iter + 1):
 if not converged and x_new is not None:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
-# ============================================================================
 # METODE 2: ITERASI TITIK TETAP - SEIDEL dengan g1A dan g2A
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 2: ITERASI TITIK TETAP - SEIDEL (g1A dan g2A)")
 print("="*80)
@@ -130,9 +122,7 @@ for i in range(1, max_iter + 1):
 if not converged:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
-# ============================================================================
 # METODE 3: NEWTON-RAPHSON
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 3: NEWTON-RAPHSON")
 print("="*80)
@@ -198,9 +188,7 @@ for i in range(1, max_iter + 1):
 if not converged:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
-# ============================================================================
 # METODE 4: SECANT
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 4: METODE SECANT")
 print("="*80)
