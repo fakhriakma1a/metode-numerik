@@ -6,7 +6,7 @@ epsilon = 0.000001
 max_iter = 1000
 
 print("="*80)
-print("PENYELESAIAN SISTEM PERSAMAAN NONLINEAR")
+print("PENYELESAIAN SISTEM PERSAMAAN NON LINEAR")
 print("f1(x,y) = x^2 + xy - 10 = 0")
 print("f2(x,y) = y + 3xy^2 - 57 = 0")
 print(f"Tebakan awal: x0 = {x0}, y0 = {y0}")
