@@ -14,9 +14,7 @@ print(f"Epsilon: {epsilon}")
 print(f"NIMx = 72 mod 4 = 0")
 print("="*80)
 
-# ============================================================================
 # METODE 1: ITERASI TITIK TETAP - JACOBI dengan g1A dan g2A
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 1: ITERASI TITIK TETAP - JACOBI (g1A dan g2A)")
 print("="*80)
@@ -75,9 +73,7 @@ for i in range(1, max_iter + 1):
 if not converged and x_new is not None:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
-# ============================================================================
 # METODE 2: ITERASI TITIK TETAP - SEIDEL dengan g1A dan g2A
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 2: ITERASI TITIK TETAP - SEIDEL (g1A dan g2A)")
 print("="*80)
@@ -102,7 +98,7 @@ for i in range(1, max_iter + 1):
         break
     x = math.sqrt(val_x)
     
-    # Langsung gunakan x baru untuk hitung y
+    # Gunakan x baru untuk hitung y
     if abs(x) < 1e-10:
         print(f"\nDivergen pada iterasi ke-{i} (x terlalu kecil)")
         break
@@ -129,9 +125,7 @@ for i in range(1, max_iter + 1):
 if not converged:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
-# ============================================================================
 # METODE 3: NEWTON-RAPHSON
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 3: NEWTON-RAPHSON")
 print("="*80)
@@ -197,9 +191,7 @@ for i in range(1, max_iter + 1):
 if not converged:
     print("\nTidak konvergen dalam batas iterasi maksimum")
 
-# ============================================================================
 # METODE 4: SECANT
-# ============================================================================
 print("\n" + "="*80)
 print("METODE 4: METODE SECANT")
 print("="*80)
